@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+  "name": "Dropbox Paper Fixer",
+  "version": "1.0.0",
+  "description": "Fixes issues with Dropbox Paper's UI",
+  "icons": {
+    "128": "icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://paper.dropbox.com/folder/show/*"
+      ],
+      "run_at": "document_idle",
+      "js": ["content-scripts/group-folder-items.js"]
+    }
+  ]
+}
