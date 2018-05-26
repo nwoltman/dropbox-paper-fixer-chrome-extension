@@ -3,9 +3,21 @@
 
 /* ======== Main ======== */
 
+const folderURLPrefix = '/folder/show/';
+
+// Group items when clicking the "Back" button
 window.addEventListener('popstate', tryGroupItemsOnNextFrame);
 
-tryGroupItemsOnNextFrame();
+// Group items after moving to a new folder
+document.addEventListener('click', (e) => {
+  if (e.target.matches(`a[href^="${folderURLPrefix}"], a[href^="${folderURLPrefix}"] *`)) {
+    tryGroupItemsOnNextFrame();
+  }
+});
+
+if (location.pathname.startsWith(folderURLPrefix)) {
+  tryGroupItemsOnNextFrame();
+}
 
 
 /* ====== Functions ====== */
@@ -20,12 +32,6 @@ function tryGroupItems() {
   if (itemsContainer === null) {
     tryGroupItemsOnNextFrame();
     return;
-  }
-
-  // Register a listener on folder links to group the items after moving to the new folder
-  const links = document.querySelectorAll('a[href^="/folder/show/"]');
-  for (var i = 0; i < links.length; i++) {
-    links[i].addEventListener('click', tryGroupItemsOnNextFrame);
   }
 
   groupFolderItems(itemsContainer);
@@ -58,6 +64,10 @@ function groupFolderItems(itemsContainer) {
 }
 
 function shouldGroupFolderItems() {
+  if (!location.pathname.startsWith(folderURLPrefix)) {
+    return false; // Not in a folder that can have its items grouped
+  }
+
   const folderTabs = document.querySelector('.folder-tabs');
 
   if (folderTabs === null) {
