@@ -6,6 +6,16 @@
   "icons": {
     "128": "icon.png"
   },
+  "page_action": {
+    "default_icon": "icon.png"
+  },
+  "permissions": [
+    "declarativeContent"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
   "content_scripts": [
     {
       "matches": [
