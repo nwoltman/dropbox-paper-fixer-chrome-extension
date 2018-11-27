@@ -6,61 +6,56 @@
 const folderURLPrefix = '/folder/show/';
 
 // Group items when clicking the "Back" button
-window.addEventListener('popstate', tryGroupItemsOnNextFrame);
+window.addEventListener('popstate', groupItemsWhenIdle);
 
 // Group items after moving to a new folder
 document.addEventListener('click', (e) => {
   if (e.target.matches(`a[href^="${folderURLPrefix}"], a[href^="${folderURLPrefix}"] *`)) {
-    tryGroupItemsOnNextFrame();
+    groupItemsWhenIdle();
   }
 });
 
 if (location.pathname.startsWith(folderURLPrefix)) {
-  tryGroupItemsOnNextFrame();
+  window.addEventListener('load', groupItemsWhenIdle);
 }
 
 
 /* ====== Functions ====== */
 
-function tryGroupItemsOnNextFrame() {
-  window.requestAnimationFrame(tryGroupItems);
+function groupItemsWhenIdle() {
+  window.requestIdleCallback(() => waitForFolders(Date.now()));
 }
 
-function tryGroupItems() {
-  const itemsContainer = document.querySelector('.hp-doc-and-folder-list');
+const WAIT_LIMIT = 1500; // 1.5 seconds
 
-  if (itemsContainer === null) {
-    tryGroupItemsOnNextFrame();
-    return;
-  }
-
-  groupFolderItems(itemsContainer);
+function waitForFolders(startTime) {
+  window.requestAnimationFrame(() => {
+    if (hasFolders()) {
+      groupFolderItems();
+    } else if (Date.now() - startTime < WAIT_LIMIT) {
+      waitForFolders(startTime);
+    }
+  });
 }
 
-function groupFolderItems(itemsContainer) {
+function hasFolders() {
+  return document.querySelector('.hp-doc-and-folder-list > .hp-list-item-folder') !== null;
+}
+
+function groupFolderItems() {
   if (!shouldGroupFolderItems()) {
     return;
   }
 
-  const folders = document.createDocumentFragment();
-  const docs = document.createDocumentFragment();
+  const itemsContainer = document.querySelector('.hp-doc-and-folder-list');
+  const files = itemsContainer.getElementsByClassName('hp-list-item-doc');
+  const filesFragment = document.createDocumentFragment();
 
-  for (;;) {
-    const item = itemsContainer.firstElementChild;
-
-    if (item === null) {
-      break;
-    }
-
-    if (item.classList.contains('hp-list-item-folder')) {
-      folders.appendChild(item);
-    } else {
-      docs.appendChild(item);
-    }
+  while (files.length > 0) {
+    filesFragment.appendChild(files[0]);
   }
 
-  itemsContainer.appendChild(folders);
-  itemsContainer.appendChild(docs);
+  itemsContainer.appendChild(filesFragment);
 }
 
 function shouldGroupFolderItems() {
