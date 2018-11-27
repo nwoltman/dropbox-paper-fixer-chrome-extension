@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "Dropbox Paper Fixer",
+  "name": "Folder Fixer for Dropbox Paper",
   "version": "1.0.1",
   "description": "Fixes issues with Dropbox Paper's UI",
   "icons": {

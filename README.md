@@ -1,4 +1,4 @@
-# Dropbox Paper Fixer (Chrome Extension)
+# Folder Fixer for Dropbox Paper (Chrome Extension)
 
 Fixes issues with Dropbox Paper's UI.
 
